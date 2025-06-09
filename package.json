@@ -1,0 +1,45 @@
+{
+    "name": "framework",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "Yet another MCP server template...",
+    "main": "framework.js",
+    "scripts": {
+        "start": "node framework.js",
+        "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --detectOpenHandles --silent"
+    },
+    "keywords": [
+        "mcp",
+        "framework",
+        "template",
+        "server",
+        "node",
+        "javascript"
+    ],
+    "author": "Russell Purinton <russell.purinton@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rpurinton/framework.git"
+    },
+    "bugs": {
+        "url": "https://github.com/rpurinton/framework/issues"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.12.1",
+        "dotenv": "^16.5.0",
+        "express": "^5.1.0",
+        "winston": "^3.17.0"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0",
+        "supertest": "^7.1.1"
+    },
+    "jest": {
+        "testEnvironment": "node",
+        "testMatch": [
+            "**/?(*.)+(spec|test).[jt]s?(x)",
+            "**/?(*.)+(spec|test).mjs"
+        ]
+    }
+}
