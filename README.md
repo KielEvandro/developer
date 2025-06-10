@@ -1,26 +1,29 @@
-# MCP developer
+# Developer Tools MCP Server
 
-A modern Node.js developer for building Model Context Protocol (MCP) servers and clients, with HTTP transport, dynamic tool registration, robust logging, and graceful shutdown.
+This project exposes a set of developer-focused tools over the Model Context Protocol (MCP), allowing remote execution of scripts, file operations, and SQL queries on a Linux server via a secure HTTP API.
+
+## Exposed Tools
+
+The following tools are available via MCP:
+
+- **write-file**: Write content to a file, with optional owner, group, and permissions.
+- **read-file**: Read the contents of a file.
+- **sql-query**: Run SQL queries on a configured MySQL database.
+- **bash-script**: Execute a bash script in a specified directory.
+- **exec-command**: Run a shell command in a specified directory.
+- **python-script**: Execute a Python script in a specified directory.
+- **php-script**: Execute a PHP script in a specified directory.
+- **java-script**: Execute a JavaScript (Node.js) script in a specified directory.
+
+Each tool validates input and returns structured output, including error details if execution fails.
 
 ---
 
-## Features
-
-- **MCP Server and Client**: Easily start an MCP server and connect a client for tool discovery and invocation.
-- **Dynamic Tool Registration**: Drop-in `.mjs` files in `src/tools/` to register new tools automatically.
-- **HTTP API**: Built-in Express HTTP server for MCP transport and health checks.
-- **Graceful Shutdown**: Handles process signals and cleans up resources on exit.
-- **Winston-based Logging**: Configurable, structured logging for all components.
-- **Environment-based Configuration**: Use `.env` for ports, tokens, and log levels.
-
----
-
-## Getting Started
+## Installation & Setup
 
 ### 1. Clone the repository
 
 ```sh
-# Replace <your-username> and <your-repo> with your GitHub info
 git clone https://github.com/<your-username>/<your-repo>.git
 cd <your-repo>
 ```
@@ -33,144 +36,68 @@ npm install
 
 ### 3. Configure environment
 
-Create a `.env` file with your settings:
+Copy `.env.example` to `.env` and fill in your settings:
 
 ```env
-MCP_PORT=1234
-MCP_TOKEN=your-mcp-token
 LOG_LEVEL=info
+MCP_PORT=4000
+MCP_TOKEN=abcd1234
+DB_HOST=your-mysql-host
+DB_USER=your-mysql-user
+DB_PASS=your-mysql-password
 ```
 
-### 4. Run the developer
+### 4. Run the server
 
 ```sh
 node developer.mjs
 ```
 
----
+### 5. (Optional) Run tests
 
-## Customization
-
-### Adding Tools
-
-- Place a `.mjs` file in `src/tools/`.
-- Export a default async function that registers your tool with the MCP server.
-- Use Zod for input validation and `buildResponse` from `toolHelpers.mjs` for output.
-
-Example: `src/tools/mcp-echo.mjs`
-
-```js
-import { z } from 'zod';
-import { buildResponse } from '../toolHelpers.mjs';
-
-export default async function (server, toolName = 'mcp-echo') {
-  server.tool(
-    toolName,
-    "Echo Tool",
-    { echoText: z.string() },
-    async (_args, _extra) => {
-      const pong = {
-        message: "echo-reply",
-        data: {
-          text: _args.echoText
-        }
-      };
-      return buildResponse(pong);
-    }
-  );
-}
+```sh
+npm test
 ```
-
-### Logging
-
-- Logging is handled by Winston.
-- Set `LOG_LEVEL` in your `.env` (`debug`, `info`, `warn`, `error`).
-
-### Error Handling & Shutdown
-
-- Uncaught exceptions and rejections are logged.
-- Graceful shutdown on `SIGTERM`, `SIGINT`, or `SIGHUP`.
-- The app will attempt to close the HTTP and MCP servers cleanly before exiting.
 
 ---
 
 ## Systemd Service Setup
 
-To run your app as a service on Linux, use the provided `developer.service` file.
+To run as a background service on Linux:
 
-**Update the paths and names to match your project.**
-
-Example `developer.service`:
-
-```ini
-[Unit]
-Description=MCP developer
-After=network-online.target
-Wants=network-online.target
-StartLimitBurst=3
-StartLimitIntervalSec=60
-
-[Service]
-User=appuser
-Group=appgroup
-RestartSec=5
-Restart=on-failure
-WorkingDirectory=/opt/developer
-ExecStart=/usr/bin/node /opt/developer/developer.mjs
-EnvironmentFile=/opt/developer/.env
-
-[Install]
-WantedBy=multi-user.target
-```
-
-**Instructions:**
-
-1. Copy and rename the service file:
+1. Copy `developer.service` to your systemd directory:
 
    ```sh
-   sudo cp developer.service /etc/systemd/system/myapp.service
+   sudo cp developer.service /usr/lib/systemd/system/developer.service
    ```
 
-2. Edit the service file:
-   - Set `WorkingDirectory` and `ExecStart` to your app's location and main file (use absolute paths).
+2. Edit the service file as needed:
+   - Set `WorkingDirectory` and `ExecStart` to your app’s location and main file.
    - Set `EnvironmentFile` to your `.env` location.
-   - Change `User` and `Group` to a non-root user for security.
+   - Change `User` and `Group` to a non-root user.
 
 3. Reload systemd and enable the service:
 
    ```sh
    sudo systemctl daemon-reload
-   sudo systemctl enable myapp.service
-   sudo systemctl start myapp.service
-   sudo systemctl status myapp.service
+   sudo systemctl enable developer.service
+   sudo systemctl start developer.service
+   sudo systemctl status developer.service
    ```
 
 ---
 
-## Folder Structure
+## Security & Best Practices
 
-```text
-src/
-  tools/         # Tool modules (auto-registered)
-  *.mjs          # Core logic (server, client, logging, etc.)
-```
+- **Keep your `.env` file secret**—never commit it to version control.
+- Use a dedicated, non-root user for running the service.
+- Only expose the MCP port to trusted networks.
 
 ---
 
-## Best Practices & Tips
+## Support
 
-- **Keep your tokens secret!** Never commit your `.env` file or secrets to version control.
-- **Use a dedicated, non-root user** for running your app in production.
-- **Write tests** for your tools and core logic as your app grows.
-- **Check the Model Context Protocol documentation** for new features and best practices.
-
----
-
-## License
-
-MIT
-
-## Developer Support
-
-Email: <russell.purinton@gmail.com>
+Email: <russell.purinton@gmail.com>  
 Discord: laozi101
+
+---
