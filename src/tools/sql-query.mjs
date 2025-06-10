@@ -7,7 +7,7 @@ export default async function (server, toolName = 'sql-query') {
   server.tool(
     toolName,
     'Run SQL query',
-    { query: z.string(), database: z.string() },
+    { query: z.string(), database: z.string().optional() },
     async (_args, _extra) => {
       try {
         if (_args.database) await db.query(`USE \`${_args.database}\``);
