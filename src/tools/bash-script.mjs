@@ -1,11 +1,8 @@
 import { z } from 'zod';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { spawn } from 'child_process';
 import log from '../log.mjs';
 import { buildResponse } from '../toolHelpers.mjs';
 import fs from 'fs/promises';
-
-const execAsync = promisify(exec);
 
 export default async function (server, toolName = 'bash-script') {
   server.tool(
@@ -27,18 +24,22 @@ export default async function (server, toolName = 'bash-script') {
           }
           execOptions.cwd = _args.cwd;
         }
-        let stdout, stderr, exitCode;
-        try {
-          const result = await execAsync(_args.script, execOptions);
-          stdout = result.stdout;
-          stderr = result.stderr;
-          exitCode = 0;
-        } catch (err) {
-          stdout = err.stdout;
-          stderr = err.stderr;
-          exitCode = typeof err.code === 'number' ? err.code : 1;
-        }
-        return buildResponse({ stdout, stderr, exitCode });
+        return await new Promise((resolve) => {
+          const child = spawn('bash', ['-s'], execOptions);
+          let stdout = '';
+          let stderr = '';
+          child.stdout.on('data', (data) => {
+            stdout += data;
+          });
+          child.stderr.on('data', (data) => {
+            stderr += data;
+          });
+          child.on('close', (exitCode) => {
+            resolve(buildResponse({ stdout, stderr, exitCode }));
+          });
+          child.stdin.write(_args.script);
+          child.stdin.end();
+        });
       } catch (err) {
         log.error('bash-script', err);
         return buildResponse({ error: err.message });
