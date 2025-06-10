@@ -25,7 +25,7 @@ export default async function (server, toolName = 'php-script') {
           execOptions.cwd = _args.cwd;
         }
         return await new Promise((resolve) => {
-          const child = spawn('php', ['-'], execOptions);
+          const child = spawn('php', execOptions);
           let stdout = '';
           let stderr = '';
           child.stdout.on('data', (data) => {

@@ -25,7 +25,7 @@ export default async function (server, toolName = 'java-script') {
           execOptions.cwd = _args.cwd;
         }
         return await new Promise((resolve) => {
-          const child = spawn('node', ['-'], execOptions);
+          const child = spawn('node', execOptions);
           let stdout = '';
           let stderr = '';
           child.stdout.on('data', (data) => {

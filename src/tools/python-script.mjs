@@ -25,7 +25,7 @@ export default async function (server, toolName = 'python-script') {
           execOptions.cwd = _args.cwd;
         }
         return await new Promise((resolve) => {
-          const child = spawn('python', ['-'], execOptions);
+          const child = spawn('python', execOptions);
           let stdout = '';
           let stderr = '';
           child.stdout.on('data', (data) => {
