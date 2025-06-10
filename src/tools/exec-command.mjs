@@ -15,18 +15,17 @@ export default async function (server, toolName = 'exec-command') {
     async (_args, _extra) => {
       try {
         let execOptions = {};
-        if (_args.cwd) {
-          // Validate cwd is a directory
-          try {
-            const stat = await fs.stat(_args.cwd);
-            if (!stat.isDirectory()) {
-              throw new Error('cwd is not a directory');
-            }
-          } catch (e) {
-            throw new Error('Invalid Linux path for cwd: ' + _args.cwd);
+        let cwd = _args.cwd || '/tmp';
+        // Validate cwd is a directory
+        try {
+          const stat = await fs.stat(cwd);
+          if (!stat.isDirectory()) {
+            throw new Error('cwd is not a directory');
           }
-          execOptions.cwd = _args.cwd;
+        } catch (e) {
+          throw new Error('Invalid Linux path for cwd: ' + cwd);
         }
+        execOptions.cwd = cwd;
         // Use execAsync and manually handle exit code
         let stdout, stderr, exitCode;
         try {

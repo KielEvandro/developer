@@ -12,18 +12,17 @@ export default async function (server, toolName = 'python-script') {
     async (_args, _extra) => {
       try {
         let execOptions = {};
-        if (_args.cwd) {
-          // Validate cwd is a directory
-          try {
-            const stat = await fs.stat(_args.cwd);
-            if (!stat.isDirectory()) {
-              throw new Error('cwd is not a directory');
-            }
-          } catch (e) {
-            throw new Error('Invalid Linux path for cwd: ' + _args.cwd);
+        let cwd = _args.cwd || '/tmp';
+        // Validate cwd is a directory
+        try {
+          const stat = await fs.stat(cwd);
+          if (!stat.isDirectory()) {
+            throw new Error('cwd is not a directory');
           }
-          execOptions.cwd = _args.cwd;
+        } catch (e) {
+          throw new Error('Invalid Linux path for cwd: ' + cwd);
         }
+        execOptions.cwd = cwd;
         return await new Promise((resolve) => {
           const child = spawn('python', execOptions);
           let stdout = '';
