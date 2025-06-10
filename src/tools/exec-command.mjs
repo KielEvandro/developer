@@ -16,10 +16,14 @@ export default async function (server, toolName = 'exec-command') {
       try {
         let execOptions = {};
         if (_args.cwd) {
-          // Check if cwd exists and is a directory
-          const stat = await fs.stat(_args.cwd);
-          if (!stat.isDirectory()) {
-            throw new Error(`cwd '${_args.cwd}' is not a directory`);
+          // Validate cwd is a directory
+          try {
+            const stat = await fs.stat(_args.cwd);
+            if (!stat.isDirectory()) {
+              throw new Error('cwd is not a directory');
+            }
+          } catch (e) {
+            throw new Error('Invalid Linux path for cwd: ' + _args.cwd);
           }
           execOptions.cwd = _args.cwd;
         }

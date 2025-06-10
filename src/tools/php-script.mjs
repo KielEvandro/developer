@@ -3,6 +3,7 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import log from '../log.mjs';
 import { buildResponse } from '../toolHelpers.mjs';
+import fs from 'fs/promises';
 
 const execAsync = promisify(exec);
 
@@ -14,7 +15,18 @@ export default async function (server, toolName = 'php-script') {
     async (_args, _extra) => {
       try {
         let execOptions = {};
-        if (_args.cwd) execOptions.cwd = _args.cwd;
+        if (_args.cwd) {
+          // Validate cwd is a directory
+          try {
+            const stat = await fs.stat(_args.cwd);
+            if (!stat.isDirectory()) {
+              throw new Error('cwd is not a directory');
+            }
+          } catch (e) {
+            throw new Error('Invalid Linux path for cwd: ' + _args.cwd);
+          }
+          execOptions.cwd = _args.cwd;
+        }
         let stdout, stderr, exitCode;
         try {
           const result = await execAsync('php', execOptions);
