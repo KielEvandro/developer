@@ -6,7 +6,7 @@ import { buildResponse } from '../toolHelpers.mjs';
 export default async function (server, toolName = 'read-file') {
   server.tool(
     toolName,
-    'Read file content',
+    'Read file content on the remote Linux server',
     { path: z.string() },
     async (_args, _extra) => {
       try {

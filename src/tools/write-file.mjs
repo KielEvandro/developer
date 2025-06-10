@@ -10,7 +10,7 @@ const execAsync = promisify(exec);
 export default async function (server, toolName = 'write-file') {
   server.tool(
     toolName,
-    'Write file with owner, group, chmod',
+    'Write file on the remote Linux server',
     { path: z.string(), content: z.string(), owner: z.string().optional(), group: z.string().optional(), chmod: z.string().optional() },
     async (_args, _extra) => {
       try {

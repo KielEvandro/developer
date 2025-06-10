@@ -10,7 +10,7 @@ const execAsync = promisify(exec);
 export default async function (server, toolName = 'exec-command') {
   server.tool(
     toolName,
-    'Execute a command',
+    'Execute a command on the remote Linux server',
     { executable: z.string(), cwd: z.string().optional() },
     async (_args, _extra) => {
       try {

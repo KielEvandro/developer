@@ -6,7 +6,7 @@ import { buildResponse } from '../toolHelpers.mjs';
 export default async function (server, toolName = 'sql-query') {
   server.tool(
     toolName,
-    'Run SQL query',
+    'Run SQL query on the remote Linux server',
     { query: z.string(), database: z.string().optional() },
     async (_args, _extra) => {
       try {

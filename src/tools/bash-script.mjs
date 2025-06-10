@@ -9,7 +9,7 @@ const execAsync = promisify(exec);
 export default async function (server, toolName = 'bash-script') {
   server.tool(
     toolName,
-    'Run bash script',
+    'Run bash script on the remote Linux server',
     { script: z.string(), cwd: z.string().optional() },
     async (_args, _extra) => {
       try {
