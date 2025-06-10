@@ -5,7 +5,6 @@ import { registerExceptionHandlers } from './src/exceptions.mjs';
 import { setupShutdownHandlers } from './src/shutdown.mjs';
 import { createHttpServer } from './src/httpServer.mjs';
 import initializeMcpServer from './src/mcpServer.mjs';
-import initializeMcpClient from './src/mcpClient.mjs';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 
 (async () => {
@@ -36,6 +35,8 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
     const port = process.env.MCP_PORT || 1234;
     httpInstance.listen(port, () => { log.info(`HTTP Server listening on port ${port}`) });
 
+/*  // Uncomment this section if you want to initialize an MCP client to list tools
+    import initializeMcpClient from './src/mcpClient.mjs';
     const mcpClient = await initializeMcpClient({ log });
     if (!mcpClient) {
       log.error('Failed to initialize MCP client.');
@@ -54,7 +55,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
       await mcpClient.close();
       log.info('MCP Client connection closed after retrieving tools.');
     }
-
+ */
     setupShutdownHandlers();
 
   } catch (error) {
