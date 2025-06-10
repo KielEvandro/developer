@@ -23,11 +23,11 @@ export default async function (server, toolName = 'exec-command') {
           }
           execOptions.cwd = _args.cwd;
         }
-        const { stdout, stderr } = await execAsync(_args.executable, execOptions);
-        return buildResponse({ stdout, stderr });
+        const { stdout, stderr, exitCode } = await execAsync(_args.executable, execOptions);
+        return buildResponse({ stdout, stderr, exitCode });
       } catch (err) {
         log.error('exec-command', err);
-        return buildResponse({ error: err.message, stdout: err.stdout, stderr: err.stderr });
+        return buildResponse({ error: err.message, stdout: err.stdout, stderr: err.stderr, exitCode: err.exitCode });
       }
     }
   );

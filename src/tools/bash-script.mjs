@@ -13,11 +13,11 @@ export default async function (server, toolName = 'bash-script') {
     { script: z.string(), cwd: z.string().optional() },
     async (_args, _extra) => {
       try {
-        const { stdout, stderr } = await execAsync('bash', { cwd: _args.cwd, input: _args.script });
-        return buildResponse({ stdout, stderr });
+        const { stdout, stderr, exitCode } = await execAsync('bash', { cwd: _args.cwd, input: _args.script });
+        return buildResponse({ stdout, stderr, exitCode });
       } catch (err) {
         log.error('bash-script', err);
-        return buildResponse({ error: err.message, stdout: err.stdout, stderr: err.stderr });
+        return buildResponse({ error: err.message, stdout: err.stdout, stderr: err.stderr, exitCode: err.exitCode });
       }
     }
   );

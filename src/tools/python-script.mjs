@@ -13,11 +13,11 @@ export default async function (server, toolName = 'python-script') {
     { script: z.string(), cwd: z.string().optional() },
     async (_args, _extra) => {
       try {
-        const { stdout, stderr } = await execAsync('python', { cwd: _args.cwd, input: _args.script });
-        return buildResponse({ stdout, stderr });
+        const { stdout, stderr, exitCode } = await execAsync('python', { cwd: _args.cwd, input: _args.script });
+        return buildResponse({ stdout, stderr, exitCode });
       } catch (err) {
         log.error('python-script', err);
-        return buildResponse({ error: err.message, stdout: err.stdout, stderr: err.stderr });
+        return buildResponse({ error: err.message, stdout: err.stdout, stderr: err.stderr, exitCode: err.exitCode });
       }
     }
   );
