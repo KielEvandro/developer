@@ -26,10 +26,12 @@ export default async function (server, toolName = 'exec-command') {
           throw new Error('Invalid Linux path for cwd: ' + cwd);
         }
         execOptions.cwd = cwd;
+        execOptions.timeout = 50000; // 50 seconds
+        execOptions.env = { ...process.env };
         // Use execAsync and manually handle exit code
-        let stdout, stderr, exitCode;
+        let stdout, stderr, exitCode, timedOut = false;
         try {
-          const result = await execAsync(_args.executable, execOptions);
+          const result = await execAsync(_args.executable, { ...execOptions, input: '' });
           stdout = result.stdout;
           stderr = result.stderr;
           exitCode = 0;
@@ -37,8 +39,13 @@ export default async function (server, toolName = 'exec-command') {
           stdout = err.stdout;
           stderr = err.stderr;
           exitCode = typeof err.code === 'number' ? err.code : 1;
+          if (err.killed && err.signal === 'SIGTERM' && err.killedByTimeout) {
+            timedOut = true;
+          } else if (err.signal === 'SIGTERM' && err.message && err.message.includes('timed out')) {
+            timedOut = true;
+          }
         }
-        return buildResponse({ stdout, stderr, exitCode });
+        return buildResponse({ stdout, stderr, exitCode, timedOut });
       } catch (err) {
         log.error('exec-command', err);
         return buildResponse({ error: err.message });

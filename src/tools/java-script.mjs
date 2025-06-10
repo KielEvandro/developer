@@ -23,10 +23,17 @@ export default async function (server, toolName = 'java-script') {
           throw new Error('Invalid Linux path for cwd: ' + cwd);
         }
         execOptions.cwd = cwd;
+        execOptions.timeout = 50000; // 50 seconds
+        execOptions.env = { ...process.env };
         return await new Promise((resolve) => {
           const child = spawn('node', execOptions);
           let stdout = '';
           let stderr = '';
+          let timedOut = false;
+          const timeout = setTimeout(() => {
+            timedOut = true;
+            child.kill('SIGTERM');
+          }, 50000);
           child.stdout.on('data', (data) => {
             stdout += data;
           });
@@ -34,7 +41,8 @@ export default async function (server, toolName = 'java-script') {
             stderr += data;
           });
           child.on('close', (exitCode) => {
-            resolve(buildResponse({ stdout, stderr, exitCode }));
+            clearTimeout(timeout);
+            resolve(buildResponse({ stdout, stderr, exitCode, timedOut }));
           });
           child.stdin.write(_args.script);
           child.stdin.end();
