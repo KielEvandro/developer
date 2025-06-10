@@ -33,7 +33,7 @@ export async function initializeMcpClient({
   async function connectWithRetry() {
     try {
       client = new ClientClass(
-        { name: 'Framework MCP Client', version },
+        { name: 'Developer MCP Client', version },
         { capabilities: { sampling: {} } }
       );
       const transportOptions = {};

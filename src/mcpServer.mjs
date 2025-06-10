@@ -32,7 +32,7 @@ export default function initializeMcpServer(
     }
     const mcpServer = new McpServer(
       {
-        name: 'Framework MCP Server',
+        name: 'Developer MCP Server',
         version: version
       },
       {
