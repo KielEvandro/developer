@@ -6,13 +6,51 @@ import { buildResponse } from '../toolHelpers.mjs';
 export default async function (server, toolName = 'sql-query') {
   server.tool(
     toolName,
-    'Run SQL query on the remote Linux server',
-    { query: z.string(), database: z.string().optional() },
+    'Run SQL queries on the remote Linux server (multiple databases and queries supported)',
+    {
+      batches: z.array(z.object({
+        database: z.string().optional(),
+        queries: z.array(z.string())
+      })).min(1, 'At least one batch is required')
+    },
     async (_args, _extra) => {
       try {
-        if (_args.database) await db.query(`USE \`${_args.database}\``);
-        const [rows] = await db.query(_args.query);
-        return buildResponse({ rows });
+        const batches = _args.batches;
+        const allResults = [];
+        for (const batch of batches) {
+          const { database, queries } = batch;
+          if (database) await db.query(`USE \`${database}\``);
+          let expandedQueries = [];
+          for (const q of queries) {
+            // Split by semicolon, ignore empty/whitespace
+            expandedQueries.push(...q.split(';').map(x => x.trim()).filter(x => x.length > 0));
+          }
+          if (expandedQueries.length === 0) {
+            allResults.push({ database, error: 'No queries provided' });
+            continue;
+          }
+          const results = [];
+          for (const q of expandedQueries) {
+            try {
+              const [rows] = await db.query(q);
+              results.push({
+                query: q,
+                success: true,
+                rows: rows,
+                rowCount: Array.isArray(rows) ? rows.length : undefined
+              });
+            } catch (err) {
+              log.error('sql-query', err);
+              results.push({
+                query: q,
+                success: false,
+                error: err.message
+              });
+            }
+          }
+          allResults.push({ database, results });
+        }
+        return buildResponse({ results: allResults });
       } catch (err) {
         log.error('sql-query', err);
         return buildResponse({ error: err.message });
