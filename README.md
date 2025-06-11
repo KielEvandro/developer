@@ -98,6 +98,6 @@ To run as a background service on Linux:
 ## Support
 
 Email: <russell.purinton@gmail.com>  
-Discord: laozi101
+Github & Discord: rpurinton
 
 ---
